@@ -14,11 +14,11 @@ Devops automates the production and development in 3 steps:
                       -----------\      ---------------\      ---------\
                       -----------/      ---------------/      ---------/
             
-  Step 1: **Automated Creation of Resources:** If a SW developer wants to automate creation of resources only and wants to leave everything else for later the tools like VAGRANT and TERRAFORM can help.
+  **Automated Creation of Resources:** If a SW developer wants to automate creation of resources only and wants to leave everything else for later the tools like VAGRANT and TERRAFORM can help.
   
-  Step 2: **Automated Deployment of Applications:** If a SW developer wants to automate creation of resources and deployment of applications and wants to leave everything else for later the tools like VAGRANT+DOCKER or VAGRANT+Ansible or TERRAFORM+DOCKER can help.
+  **Automated Deployment of Applications:** If a SW developer wants to automate creation of resources and deployment of applications and wants to leave everything else for later the tools like VAGRANT+DOCKER or VAGRANT+Ansible or TERRAFORM+DOCKER can help.
  
- Step 3: **Automated Monitoring:** If a SW developer wants to automate everything the tools like VAGRANT+Ansible+Kubernetes and TERRAFORM+CHEF+Kubernetes can help.
+ **Automated Monitoring:** If a SW developer wants to automate everything the tools like VAGRANT+Ansible+Kubernetes and TERRAFORM+CHEF+Kubernetes can help.
 The table below shows which tools is useful in which context.
 | Technology    | Automation Level          | Alternatives                     | Path in Repo|
 | ------------- | --------------------      | -------------------------        |----------   |
@@ -31,4 +31,6 @@ The table below shows which tools is useful in which context.
 ### How to use this Repository?
 This repository consists of severalk projects each of these projects has a ReadMe file. Go through the README file meritiously and try to deploy the applications.
 
-Feel free to forward me the bugs with _verbose_ output Suchintan Mishra [suchintan.mishra@gmail.com] [suchintan_mishra@soa.ac.in]
+Feel free to forward me the bugs with _verbose_ output 
+
+Suchintan Mishra [suchintan.mishra@gmail.com] [suchintan_mishra@soa.ac.in]
