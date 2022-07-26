@@ -116,7 +116,7 @@
         owner: vagrant
 
   - name: sleep until master ready
-    shell: sleep 200
+    shell: sleep 70
 
   - name: install Pod network
     become: yes
@@ -129,10 +129,8 @@
   - name: Get the token for joining the worker nodes
     become: yes
     become_user: vagrant
-    shell: kubeadm token create  --print-join-command > join.sh
-    args:
-      chdir: $HOME
-      creates: join.sh
+    shell: sudo touch /shared/join.sh
+    shell: kubeadm token create  --print-join-command > /shared/join.sh
 
   handlers:
     - name: docker status
