@@ -8,8 +8,12 @@ departmemnts.
 
 ### How DevOps tools can help?
 
-Devops automates the production and development in 3 steps. 
-  
+Devops automates the production and development in 3 steps:
+
+                       Creation     Application Deployment    Monitoring
+                      -----------\      ---------------\      ---------\
+                      -----------/      ---------------/      ---------/
+            
   Step 1: **Automated Creation of Resources:** If a SW developer wants to automate creation of resources only and wants to leave everything else for later the tools like VAGRANT and TERRAFORM can help.
   
   Step 2: **Automated Deployment of Applications:** If a SW developer wants to automate creation of resources and deployment of applications and wants to leave everything else for later the tools like VAGRANT+DOCKER or VAGRANT+Ansible or TERRAFORM+DOCKER can help.
