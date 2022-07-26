@@ -33,4 +33,4 @@ This repository consists of severalk projects each of these projects has a ReadM
 
 Feel free to forward me the bugs with _verbose_ output 
 
-Suchintan Mishra [suchintan.mishra@gmail.com] [suchintan_mishra@soa.ac.in]
+Dr. Suchintan Mishra [suchintan.mishra@gmail.com] [suchintan_mishra@soa.ac.in]
