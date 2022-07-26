@@ -21,10 +21,10 @@ Devops automates the production and development in 3 steps:
  Step 3: **Automated Monitoring:** If a SW developer wants to automate everything the tools like VAGRANT+Ansible+Kubernetes and TERRAFORM+CHEF+Kubernetes can help.
 The table below shows which tools is useful in which context.
 
-| Technology    | Automation Level          | Alternatives                     | Path in Repo|
-| ------------- | --------------------      | -------------------------        |----------   |
-| Vagrant       | Resource Creation         | Terraform, AWS CLOUD Formation   |             |
-| Terraform     | Resource Creation         | Vagrant, AWS CLOUD FOrmation     |             |
-|Ansible        | Application deployment    | CHEF, Puppet                     |             |     
-|Docker         | Application deployment    |                                  |             |             
-|Kubernetes     | Resource Monitoring       | Kubernetes Charm, AWS EKS        |             |
+          | Technology    | Automation Level          | Alternatives                     | Path in Repo|
+          | ------------- | --------------------      | -------------------------        |----------   |
+          | Vagrant       | Resource Creation         | Terraform, AWS CLOUD Formation   |             |
+          | Terraform     | Resource Creation         | Vagrant, AWS CLOUD FOrmation     |             |
+          |Ansible        | Application deployment    | CHEF, Puppet                     |             |     
+          |Docker         | Application deployment    |                                  |             |             
+          |Kubernetes     | Resource Monitoring       | Kubernetes Charm, AWS EKS        |             |
