@@ -8,6 +8,16 @@ departmemnts.
 
 ### How DevOps tools can help?
 
-Devops tools can 
+Devops automates the production and development in 3 steps. 
+  Step 1: Automated Creation of Resources
+  Step 2: Automated Deployment of Applications
+  Step 3: Automated Monitoring.
+The table below shows which tools is useful in which context.
 
-
+| Technology    | Automation Level          | Alternatives                     | Path in Repo|
+| ------------- | --------------------      | -------------------------        |----------   |
+| Vagrant       | Resource Creation         | Terraform, AWS CLOUD Formation   |             |
+| Terraform     | Resource Creation         | Vagrant, AWS CLOUD FOrmation     |             |
+|Ansible        | Application deployment    | CHEF, Puppet                     |             |     
+|Docker         | Application deployment    |                                  |             |             
+|Kubernetes     | Resource Monitoring       | Kubernetes Charm, AWS EKS        |             |
