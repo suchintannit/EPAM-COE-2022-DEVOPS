@@ -1,5 +1,5 @@
 # EPAM-COE-2022-DEVOPS
-
+This repository was created during EPAM-COE 2022 training.
 ### What is DevOps?
 Development and Operations (DevOps) is a set of practices that combines software development (Dev) and IT operations (Ops). It aims to shorten the systems 
 development life cycle and provide continuous delivery with high software quality. Since the software develeopment is transported across departments, it is not 
@@ -27,3 +27,8 @@ The table below shows which tools is useful in which context.
 |Ansible        | Application deployment    | CHEF, Puppet                     |             |     
 |Docker         | Application deployment    |                                  |             |             
 |Kubernetes     | Resource Monitoring       | Kubernetes Charm, AWS EKS        |             |
+
+### How to use this Repository?
+This repository consists of severalk projects each of these projects has a ReadMe file. Go through the README file meritiously and try to deploy the applications.
+
+Feel free to forward me the bugs with _verbose_ output Suchintan Mishra [suchintan.mishra@gmail.com] [suchintan_mishra@soa.ac.in]
