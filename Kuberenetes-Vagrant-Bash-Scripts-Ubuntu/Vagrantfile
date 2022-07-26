@@ -1,0 +1,51 @@
+################################# ABOUT ############################################
+################################# Suchintan Mishra #################################   #
+# This is a fully automated vagrant file that creates a master node and 2 worker       #
+# Go to the root folder and run                                                        #
+####################################################################################   #
+NUM_WORKER_NODES=1
+IP_NW="10.0.0."
+IP_START=10
+i=1
+$etcd_cluster = "node1=http://10.0.0.10:2380"
+Vagrant.configure("2") do |config|
+  config.vm.provision "shell", env: {"IP_NW" => IP_NW, "IP_START" => IP_START}, inline: <<-SHELL
+      apt-get update -y
+      echo "$IP_NW$((IP_START)) master" >> /etc/hosts
+      echo "$IP_NW$((IP_START+1)) node01" >> /etc/hosts
+      echo "$IP_NW$((IP_START+2)) node02" >> /etc/hosts
+  SHELL
+  config.vm.synced_folder "./shared", "/shared"
+
+  config.vm.box = "bento/ubuntu-22.04"
+  config.vm.box_check_update = true
+
+  config.vm.define "master" do |master|
+    # master.vm.box = "bento/ubuntu-18.04"
+    master.vm.hostname = "master-node"
+    master.vm.network "private_network", ip: IP_NW + "#{IP_START}"
+    master.vm.provider "virtualbox" do |vb|
+        vb.memory = 4048
+        vb.cpus = 2
+    end
+    master.vm.provision "shell", path: "common.sh"
+    master.vm.provision "shell", path: "master.sh"
+   
+  end
+
+  (1..NUM_WORKER_NODES).each do |i|
+
+  config.vm.define "node0#{i}" do |node|
+    node.vm.hostname = "worker-node0#{i}"
+    node.vm.network "private_network", ip: IP_NW + "#{IP_START + i}"
+    node.vm.provider "virtualbox" do |vb|
+        vb.memory = 2048
+        vb.cpus = 1
+    end
+    node.vm.provision "shell", path: "common.sh"
+    node.vm.provision "shell", path: "node.sh"
+       
+  end
+
+  end
+end 

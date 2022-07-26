@@ -1,0 +1,27 @@
+[submodule "kubernetes-vagrant-ansible-ubuntu"]
+	path = kubernetes-vagrant-ansible-ubuntu
+	url = https://github.com/suchintanmishra/kubernetes-vagrant-ansible-ubuntu.git
+[submodule "Kuberenetes-Vagrant-Bash-Scripts-Ubuntu"]
+	path = Kuberenetes-Vagrant-Bash-Scripts-Ubuntu
+	url = https://github.com/suchintanmishra/Kuberenetes-Vagrant-Bash-Scripts-Ubuntu.git
+[submodule "Ansible-Install_LAMP-on_CENTOS_using_ROLES"]
+	path = Ansible-Install_LAMP-on_CENTOS_using_ROLES
+	url = https://github.com/suchintanmishra/Ansible-Install_LAMP-on_CENTOS_using_ROLES.git
+[submodule "Ansible-Configure_NGINX_on_CENTOS_VM_on-VirtualBox"]
+	path = Ansible-Configure_NGINX_on_CENTOS_VM_on-VirtualBox
+	url = https://github.com/suchintanmishra/Ansible-Configure_NGINX_on_CENTOS_VM_on-VirtualBox.git
+[submodule "Ansible-EC2-Ping"]
+	path = Ansible-EC2-Ping
+	url = https://github.com/suchintanmishra/Ansible-EC2-Ping.git
+[submodule "Terraform-Example-Conditionals"]
+	path = Terraform-Example-Conditionals
+	url = https://github.com/suchintanmishra/Terraform-Example-Conditionals.git
+[submodule "Terraform-Example-Data-Source"]
+	path = Terraform-Example-Data-Source
+	url = https://github.com/suchintanmishra/Terraform-Example-Data-Source.git
+[submodule "Terraform-Module-Example-S3-website"]
+	path = Terraform-Module-Example-S3-website
+	url = https://github.com/suchintanmishra/Terraform-Module-Example-S3-website.git
+[submodule "Terraform-Example-User-Functions"]
+	path = Terraform-Example-User-Functions
+	url = https://github.com/suchintanmishra/Terraform-Example-User-Functions.git

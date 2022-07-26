@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Install necessary dependencies
+brew install go
+# Setup sudo to allow no-password sudo for your group and adding your user
+name="suchintanmishra"
+echo "${name} ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/${name}
+
+# Create GOPATH for your user & download the webapp from github
+sudo -H -i -u ${name} -- env bash << EOF
+cd /Users/suchintanmishra
+export GOROOT=/usr/lib/go
+go get -d github.com/hashicorp/learn-go-webapp-demo
+cd go/src/github.com/hashicorp/learn-go-webapp-demo
+go run webapp.go
+EOF

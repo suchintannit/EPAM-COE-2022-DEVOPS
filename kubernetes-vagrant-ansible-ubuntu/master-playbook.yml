@@ -1,0 +1,139 @@
+---
+- hosts: localhost
+  become: true
+  tasks:
+  - name: Install packages that allow apt to be used over HTTPS
+    apt:
+       pkg:
+         - apt-transport-https
+         - ca-certificates
+         - curl
+         - gnupg-agent
+         - software-properties-common
+
+  - name: Add an apt signing key for Docker
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+
+  - name: Add apt repository for stable version
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+      state: present
+
+  - name: Install docker and its dependecies
+    apt:
+      name: "{{ packages }}"
+      state: present
+      update_cache: yes
+    vars:
+      packages:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    notify:
+      - docker status
+  - name: Enable service docker, and enable persistently
+    service:
+       name: docker
+       enabled: yes
+  - name: Add vagrant user to docker group
+    shell: docker
+    shell: sudo usermod -aG docker $USER
+    shell: docker run hello-world
+
+  - name: Remove swapfile from /etc/fstab
+    mount:
+      name: "{{ item }}"
+      fstype: swap
+      state: absent
+    with_items:
+      - swap
+      - none
+  - name: Disable firewall and swap
+    shell: modprobe br_netfilter
+    shell: sudo sysctl net.bridge.bridge-nf-call-iptables=1
+    shell: sudo ufw disable
+  - name: Disable swap
+    command: swapoff -a
+    when: ansible_swaptotal_mb > 0
+
+  - name: Add an apt signing key for Kubernetes
+    apt_key:
+      url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+      state: present
+
+  - name: Adding apt repository for Kubernetes
+    apt_repository:
+      repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+      state: present
+      filename: kubernetes.list
+
+  - name: Install Kubernetes binaries
+    apt:
+      name: "{{ packages }}"
+      state: present
+      update_cache: yes
+    vars:
+      packages:
+        - kubelet
+        - kubeadm
+        - kubectl
+
+  - name: Configure node ip
+    lineinfile:
+      path: /etc/default/kubelet
+      line: KUBELET_EXTRA_ARGS=--node-ip=10.0.0.100
+      create: yes
+
+  - name: Restart kubelet
+    service:
+      name: kubelet
+      daemon_reload: yes
+      state: restarted
+
+  - name: Starting Containerd
+    shell: sudo chmod +x cont.sh
+    shell: sudo sh cont.sh
+
+  - name: initialize the cluster
+    shell: kubeadm init  --apiserver-advertise-address="10.0.0.100" --pod-network-cidr="10.244.0.0/16"  --apiserver-cert-extra-sans "10.0.0.100" --ignore-preflight-errors Swap --ignore-preflight-errors=Mem
+  
+  - name: create .kube directory
+    become: yes
+    become_user: vagrant
+    file:
+      path: $HOME/.kube
+      state: directory
+      mode: 0755
+  - name: sudo copy admin.conf to user's kube config
+    become: yes
+    become_user: root
+    copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/vagrant/.kube/config
+        remote_src: yes
+        owner: vagrant
+
+  - name: sleep until master ready
+    shell: sleep 200
+
+  - name: install Pod network
+    become: yes
+    become_user: vagrant
+    shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml >> pod_network_setup.txt
+    args:
+      chdir: $HOME
+      creates: pod_network_setup.txt  
+        
+  - name: Get the token for joining the worker nodes
+    become: yes
+    become_user: vagrant
+    shell: kubeadm token create  --print-join-command > join.sh
+    args:
+      chdir: $HOME
+      creates: join.sh
+
+  handlers:
+    - name: docker status
+      service: name=docker state=started
