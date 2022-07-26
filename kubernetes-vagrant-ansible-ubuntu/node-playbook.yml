@@ -1,6 +1,7 @@
 ---
 - hosts: localhost
   become: true
+  become_user: root
   tasks:
   - name: Install packages that allow apt to be used over HTTPS
     apt:
@@ -81,6 +82,7 @@
     lineinfile:
       path: /etc/default/kubelet
       line: KUBELET_EXTRA_ARGS=--node-ip=10.0.0.101
+      create: yes
 
   - name: Restart kubelet
     service:
@@ -89,11 +91,9 @@
       state: restarted
 
   - name: Copy the join command to server location
-    copy: src=join.sh dest=join.sh mode=0777
+    shell: sudo chmod +x /shared/join.sh
+    shell: sudo sh /shared/join.sh
 
-  - name: Join the node to cluster
-    command: sh join.sh
-
-    handlers:
+  handlers:
     - name: docker status
       service: name=docker state=started
