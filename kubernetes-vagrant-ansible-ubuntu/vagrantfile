@@ -20,7 +20,7 @@ Vagrant.configure("2") do |config|
         master.vm.hostname = "k8s-master"
         master.vm.provision "file", source: "master-playbook.yml", destination: "master-playbook.yml"
         master.vm.provision "file", source: "cont.sh", destination: "cont.sh"
-        master.vm.provision "file", source: "network.sh", destination: "network.sh"
+        #master.vm.provision "file", source: "network.sh", destination: "network.sh"
         master.vm.provision "shell", path: "common.sh"
         
         
