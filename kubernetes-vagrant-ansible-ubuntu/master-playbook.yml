@@ -1,6 +1,6 @@
 ---
 - hosts: localhost
-  become: true
+  become: yes
   tasks:
   - name: Install packages that allow apt to be used over HTTPS
     apt:
@@ -92,45 +92,26 @@
       daemon_reload: yes
       state: restarted
 
-  - name: Starting Containerd
-    shell: sudo chmod +x cont.sh
-    shell: sudo sh cont.sh
+  - name: restart service
+    service:
+      name: containerd
+      daemon_reload: yes
+      state: restarted
 
-  - name: initialize the cluster
-    shell: kubeadm init  --apiserver-advertise-address="10.0.0.100" --pod-network-cidr="10.244.0.0/16"  --apiserver-cert-extra-sans "10.0.0.100" --ignore-preflight-errors Swap --ignore-preflight-errors=Mem
-  
-  - name: create .kube directory
-    become: yes
+  - name: Initialize the Kubernetes cluster using kubeadm
+    command: kubeadm init --apiserver-advertise-address="192.168.50.10" --apiserver-cert-extra-sans="192.168.50.10"  --node-name k8s-master --pod-network-cidr=192.168.0.0/16
+  - name: Setup kubeconfig for vagrant user
+    command: "{{ item }}"
+    with_items:
+     - mkdir -p /home/vagrant/.kube
+     - cp -i /etc/kubernetes/admin.conf /home/vagrant/.kube/config
+     - chown vagrant:vagrant /home/vagrant/.kube/config
+    become: false
     become_user: vagrant
-    file:
-      path: $HOME/.kube
-      state: directory
-      mode: 0755
-  - name: sudo copy admin.conf to user's kube config
-    become: yes
-    become_user: root
-    copy:
-        src: /etc/kubernetes/admin.conf
-        dest: /home/vagrant/.kube/config
-        remote_src: yes
-        owner: vagrant
-
-  - name: sleep until master ready
-    shell: sleep 70
-
-  - name: install Pod network
-    become: yes
+  - name: Install calico pod network
+    become: false
     become_user: vagrant
-    shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml >> pod_network_setup.txt
-    args:
-      chdir: $HOME
-      creates: pod_network_setup.txt  
-        
-  - name: Get the token for joining the worker nodes
-    become: yes
-    become_user: vagrant
-    shell: sudo touch /shared/join.sh
-    shell: kubeadm token create  --print-join-command > /shared/join.sh
+    command: kubectl create -f https://docs.projectcalico.org/v3.4/getting-started/kubernetes/installation/hosted/calico.yaml
 
   handlers:
     - name: docker status
