@@ -11,11 +11,9 @@ The project will create a Kubernetes 1.15.0 cluster with 3 nodes which contains 
 
 | IP           | Hostname | Componets                                |
 | ------------ | -------- | ---------------------------------------- |
-| 10.0.0.100 | k8s-master    | kube-apiserver, kube-controller-manager, kube-scheduler, etcd, kubelet, docker, flannel, dashboard |
-| 10.0.0.101 | node01    | kubelet, docker, flannel, todo-myapp          |
-| 10.0.0.102 | node02    | kubelet, docker, flannel, mysql-container               |
-
-The default setting will create the private network from 10.0.0.100 to 10.0.0.102 for nodes, and it will use the host's DHCP for the public IP.The kubernetes service's VIP range is `10.13.0.0/16`. The container network range is `10.13.0.0/16` owned by flannel with `host-gw` backend. `kube-proxy` will run as `ipvs` mode. The project intitializes a control plane at the 'master' node and also installs the 'kubernetes-dashboard. The dashboard is available at:
+| 192.168.50.10 | k8s-master    | kube-apiserver, kube-controller-manager, kube-scheduler, etcd, kubelet, docker, flannel, dashboard |
+| 192.168.50.11 | node01    | kubelet, docker, flannel, todo-myapp    |
+| 192.168.50.12 | node02    | kubelet, docker, flannel, mysql-container |
 
 
 ### 2. Vagrant
@@ -54,14 +52,14 @@ In contrast with other popular configuration-management software — such as Che
 
 In this project we have 2 ansible yml files **deploy-master** and **deploy-node**. The scripts are responsible to deploy kubernetes on master and worker nodes respectively. Once **creation of a cluster of 1 master and 2 worker nodes**, apps can be deployed as pods into the worker nodes. These scripts automate the entire process of setting of a kubernetes cluster. Also in the script we have 2 bash scripts .
 
-**NOTE**:-These bash scripts are only used to install ansible in the master and worker nodes as I am working on a windows system where ansible cannot be installed ( it is very contrary to the fact that ansible is stateless and should not be installed in the target system). If you are working on an ubuntu system (which i recommend you do) then there is no need of the bash scripts. The automation can only be done using vagrant and ansible. On any vagrant, virtualbox and ansible installed ubuntu system just change the following in the vagrant file. Mind you if in the host system ansible can run then there is no need of vagrant either. the whole setup can be done only using ansible scripts.
+**NOTE**:-These bash scripts are only used to install ansible in the master and worker nodes (as I am working on a windows system where ansible cannot be installed it is very contrary to the fact that ansible is stateless and should not be installed in the target system). If you are working on an ubuntu system (which i recommend you do) then there is no need of the bash scripts and vagrant scripts. The automation can only be done using vagrant and ansible. On any vagrant, virtualbox and ansible installed ubuntu system just change the following in the vagrant file.
 		
 		ansible.playbook = "deploy-master"
             	ansible.extra_vars = 
 		{
                 	node_ip: "192.168.50.10",
             	}
-and delete the following lines in master creation block:
+and delete the following lines in master creation block in the vagrantfile:
 
 		master.vm.provision "file", source: "deploy-master.yml", destination: "master-playbook.yml"
         	master.vm.provision "shell", path: "deploy-master.sh"
@@ -72,10 +70,13 @@ and do,
                 	node_ip: "192.168.50.10",
             	}
 
-and delete the following in the node block:
+and delete the following in the node block in the vagrantfile:
 
 		node.vm.provision "file", source: "deploy-node.yml" , destination:"node-playbook.yml"
             	node.vm.provision "shell", path: "deploy-node.sh"
+		
+**ALSO NOTE- If the host system is any other except windows then only ansible is enough to create the Kubernetes cluster. No need of vagrant and bash scripts.**
+
 
 ### 3. How the Tools (Vagrant, Ansible Docker and Ubuntu) Automation Works?
 	 	 ______________________________________________________________________________________
