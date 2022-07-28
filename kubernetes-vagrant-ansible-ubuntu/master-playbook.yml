@@ -83,21 +83,22 @@
   - name: Configure node ip
     lineinfile:
       path: /etc/default/kubelet
-      line: KUBELET_EXTRA_ARGS=--node-ip=10.0.0.100
+      line: KUBELET_EXTRA_ARGS=--node-ip="192.168.50.10"
       create: yes
-
+#RESTART the containerd service as it is a preflight requirement. Also Restart the 'kubelet'
+  - name: Remove Config File
+    command: rm /etc/containerd/config.toml
+  - name: Restart Containerd  
+    service:
+      name: containerd
+      daemon_reload: yes
+      state: restarted
   - name: Restart kubelet
     service:
       name: kubelet
       daemon_reload: yes
       state: restarted
-
-  - name: restart service
-    service:
-      name: containerd
-      daemon_reload: yes
-      state: restarted
-
+#Initialize the Kube cluster.
   - name: Initialize the Kubernetes cluster using kubeadm
     command: kubeadm init --apiserver-advertise-address="192.168.50.10" --apiserver-cert-extra-sans="192.168.50.10"  --node-name k8s-master --pod-network-cidr=192.168.0.0/16
   - name: Setup kubeconfig for vagrant user
@@ -108,6 +109,10 @@
      - chown vagrant:vagrant /home/vagrant/.kube/config
     become: false
     become_user: vagrant
+#Before Installing the Network please wait for 100 seconds
+  - name: Wait for the Control Plane to get Ready
+    command: sleep 30
+#Install the pod Network.
   - name: Install calico pod network
     become: false
     become_user: vagrant
