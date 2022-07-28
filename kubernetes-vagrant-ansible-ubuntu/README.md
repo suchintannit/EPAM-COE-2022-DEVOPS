@@ -115,21 +115,21 @@ Ansible is a suite of software tools that enables infrastructure as code. It is 
 
 In contrast with other popular configuration-management software — such as Chef, Puppet, Salt and CFEngine — Ansible uses an agentless architecture, with Ansible software not normally running or even installed on the controlled node. Instead, Ansible orchestrates a node by installing and running modules on the node temporarily via SSH. For the duration of an orchestration task, a process running the module communicates with the controlling machine with a JSON-based protocol via its standard input and output. When Ansible is not managing a node, it does not consume resources on the node because no daemons are run or software installed.
 
-In this project we have 1 ansible file **deploy-kuber**. The script is responsible to deploy kubernetes and **create a cluster of 1 master and 2 worker nodes**. These scripts automate the entire process of setting of a kubernetes cluster. Once that is done applications can be deployed as pods into these worker nodes. Also in the script we have 2 bash scripts.
+In this project we have 2 ansible yml files **deploy-master** and **deploy-node**. The scripts are responsible to deploy kubernetes on master and worker nodes respectively. Once **creation of a cluster of 1 master and 2 worker nodes**, apps can be deployed as pods into the worker nodes. These scripts automate the entire process of setting of a kubernetes cluster. Also in the script we have 2 bash scripts .
 
 **NOTE**:-These bash scripts are only used to install ansible in the master and worker nodes as I am working on a windows system where ansible cannot be installed ( it is very contrary to the fact that ansible is stateless and should not be installed in the target system). If you are working on an ubuntu system (which i recommend you do) then there is no need of the bash scripts. The automation can only be done using vagrant and ansible. On any vagrant, virtualbox and ansible installed ubuntu system just change the following in the vagrant file.
 		
-		ansible.playbook = "deploy-kuber"
+		ansible.playbook = "deploy-master"
             	ansible.extra_vars = 
 		{
                 	node_ip: "192.168.50.10",
             	}
 and delete the following lines in master creation block:
 
-		master.vm.provision "file", source: "deploy-kuber.yml", destination: "master-playbook.yml"
+		master.vm.provision "file", source: "deploy-master.yml", destination: "master-playbook.yml"
         	master.vm.provision "shell", path: "deploy-master.sh"
 and do, 
-		ansible.playbook = "deploy-kuber"
+		ansible.playbook = "deploy-node"
             	ansible.extra_vars = 
 		{
                 	node_ip: "192.168.50.10",
@@ -137,7 +137,7 @@ and do,
 
 and delete the following in the node block:
 
-		node.vm.provision "file", source: "deploy-kuber.yml" , destination:"node-playbook.yml"
+		node.vm.provision "file", source: "deploy-node.yml" , destination:"node-playbook.yml"
             	node.vm.provision "shell", path: "deploy-node.sh"
 
 ### 10. FAQs.
