@@ -2,9 +2,9 @@
 **Author**-SUCHINTAN MISHRA [suchintan_mishra@epam.com]
 ### 1. Problem Statement:
 
-Automate the process of creating a kubernetes cluster having 1 master node and n worker nodes. Make sure the master and workers can communicate. Deploy the 3-tier docker application discussed in https://docs.docker.com/get-started/02_our_app/. Use any automation tool to automate the creation, deployment and provisioning, and monitoring of the applications. The ADDED COSNTRAINT for YOU is do this on a windows machine. 
+Automate the process of creating a kubernetes cluster having 1 master node and n worker nodes. Make sure the master and workers can communicate. Deploy the 3-tier docker application discussed in https://docs.docker.com/get-started/02_our_app/. 
 
-
+Use any automation tool to automate the creation, deployment and provisioning, and monitoring of the applications. The ADDED COSNTRAINT for YOU is do this on a windows machine. 
 
 ### 2. Solution Architecture
 	 	 ______________________________________________________________________________________
@@ -26,26 +26,6 @@ Automate the process of creating a kubernetes cluster having 1 master node and n
 		'			''''''''''''	    (MySQL)					'
 	 	'											'
 		'______________________________________________________________________________________	':
-### 2. Project Architecture?
-	 	 ______________________________________________________________________________________
-		'											'
-		'	 		''''''''''''\   kubeadm,kubectl,dashboard,REST			'
-		' /----> Ansible --->	'k8s-master  / <<------------<----------- 			'
-		'/			''''''''''''				'			'
-		'						        	'			'
-		'								'			'
-		'								'
-		'			''''''''''''\				'			'
-	Vagrant-'----->	Ansible	 ---->	   Node01---->-> Docker Container <-<---- ' <----<----kubernetes'
-		'	 			    /	  (To-do APP)		'		        '
-	        '\			''''''''''''				'			'					
-		' \								'
-		' \								'
-		'  \	   		''''''''''''				'			'
-		'   \----->Ansible --->	'   Node02--->-> Docker Conatiner  <-<---			'
-		'			''''''''''''	    (MySQL)					'
-	 	'											'
-		'______________________________________________________________________________________	'
 
 ### 3. Automated Creation of Kubernetes cluster on ubuntu: Using Vagrant and Ansible.
 
@@ -61,7 +41,7 @@ The project will create a Kubernetes 1.15.0 cluster with 3 nodes which contains 
 | 192.168.50.11 | node01    | kubelet, docker, flannel, todo-myapp    |
 | 192.168.50.12 | node02    | kubelet, docker, flannel, mysql-container |
 
-### 3. Ansible Playbooks for Automation
+### 3. Ansible Playbooks for Automation of application provisioning.
 
 Infrastructure as code (IaC) is the process of managing and provisioning computer data centers through machine-readable definition files, rather than physical hardware configuration or interactive configuration tools.
 
@@ -116,13 +96,8 @@ Once the master and nodes are up do the following:
 	3.Now turn into the worker nodes and run the output of kubeadm-init in the master node something like this
 		kubeadm join 10.0.0.10:6443 --token d6c4tt.hp87qv9qel8s25zs --discovery-token-ca-cert-hash 			sha256:c3df3c0dbc6be18f59f180b535a4de1a37ba8082a2dfc638df1b01a1547b34fa
 		
-	4. Once the nodes join the master, In node1 install the to-do my app. In node2 install its persistant database.
-	
-	5. Follow the instaructions from https://docs.docker.com/get-started/02_our_app/#:~:text=%20Start%20an%20app%20container%20%F0%9F%94%97%20%201,items%20as%20complete%20and%20remove%20items.%20More%20
-	
-	6. Run the app on node1 and check in node2 if the database is being stored.
-
-
+	4. If everything goes well then your nodes should join the master. 
+	5. Reapeat the process in as many nodes you want.
 		
 ### 6. How to deploy applications into pods?
 	Step-1: List the nodes in your cluster after SSH into k8s-master, along with their labels:
