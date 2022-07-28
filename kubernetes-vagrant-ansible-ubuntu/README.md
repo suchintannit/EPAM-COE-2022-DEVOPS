@@ -67,7 +67,34 @@ Once the master and nodes are up do the following:
 		'______________________________________________________________________________________	'
 		
 ### 6. How to deploy applications into pods?
-
+	Step-1: List the nodes in your cluster after SSH into k8s-master, along with their labels:
+	
+		PS> kubectl get nodes --show-labels
+	
+	Step-2: Choose one of your nodes (say node1), and add a label to it:
+	
+		PS> kubectl label nodes node1 disktype=ssd
+	
+	Step-3: Check the above steps
+		
+		PS> kubectl get nodes --show-labels
+		
+	Step-4: Create a YML file to run the getting-started app discussed in docker documentation.
+			apiVersion: v1
+			kind: Pod
+			metadata:
+		  	  name: getting-started
+		  	  labels:
+			    env: test
+		        spec:
+			  containers:
+			    - name: getting-started
+			    image: 896325/suchintan-getting-started
+  			    imagePullPolicy: IfNotPresent
+  			  nodeSelector:
+			    disktype: ssd
+	Step-5: Inside node1 through SSH check:
+		PS>kubectl get pods --output=wide
 	 
 ### 5. Troubleshoot Execution.
 Do a vagrant up the first time you execute. Let the process complete in one go. If it gets stuck then close the VMs from virtualbox and then do the follwoing options from the root folder.
