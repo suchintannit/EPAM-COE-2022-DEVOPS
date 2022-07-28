@@ -2,9 +2,15 @@
 **Author**-SUCHINTAN MISHRA [suchintan_mishra@epam.com]
 ### 1. Problem Statement:
 
-Automate the process of creating a kubernetes cluster having 1 master node and n worker nodes. Make sure the master and workers can communicate. Deploy the 3-tier docker application discussed in https://docs.docker.com/get-started/02_our_app/. 
+Automate the process of creating a kubernetes cluster having 1 master node and n worker nodes. 
 
-Use any automation tool to automate the creation, deployment and provisioning, and monitoring of the applications. The ADDED COSNTRAINT for YOU is do this on a windows machine. 
+Make sure the master and workers can communicate. 
+
+Deploy the 3-tier docker application discussed in https://docs.docker.com/get-started/02_our_app/. 
+
+Use any automation tool to automate the creation, deployment and provisioning, and monitoring of the applications. 
+
+The _ADDED COSNTRAINT_ for YOU is to do this on a _windows_ host machine. 
 
 ### 2. Solution Architecture
 	 	 ______________________________________________________________________________________
