@@ -37,12 +37,57 @@
     service:
        name: docker
        enabled: yes
-  - name: Add vagrant user to docker group
-    shell: docker
-    shell: sudo usermod -aG docker $USER
-    shell: docker run hello-world
+  - name: Restart Docker
+    service:
+      name: docker
+      daemon_reload: yes
+      state: restarted
 
-  - name: Remove swapfile from /etc/fstab
+  - name: Ensure containerd config directory exists.
+    file:
+      path: /etc/containerd
+      state: directory
+    register: containerd_dir
+
+  - name: Get defaults from containerd.
+    command: containerd config default
+    changed_when: false
+    register: containerd_config_default
+
+  - name: Prepare containerd/config.toml from default config
+    copy:
+      dest: /tmp/containerd_config.toml
+      content: "{{ containerd_config_default.stdout }}"
+
+  - name: Set Cgroup driver to systemd
+    lineinfile:
+      insertafter: '.*\[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options\]$'
+      line: '          SystemdCgroup = true'
+      state: present
+      path: /tmp/containerd_config.toml
+
+  - name: Make sure  SystemdCgroup = false is not set
+    ansible.builtin.lineinfile:
+      path: /tmp/containerd_config.toml
+      state: absent
+      line: '            SystemdCgroup = false'
+    notify: restart containerd
+
+  - name: Copy config.toml to /etc/containerd
+    copy:
+      remote_src: true
+      src: /tmp/containerd_config.toml
+      dest: /etc/containerd/config.toml
+    notify: restart containerd
+
+  - name: Cleanup temporary file
+    file:
+     path: /tmp/containerd_config.toml
+     state: absent
+    changed_when: false
+
+
+  - name: Remove swapfile from /etc/fstab###########################################################################
     mount:
       name: "{{ item }}"
       fstype: swap
@@ -50,7 +95,7 @@
     with_items:
       - swap
       - none
-  - name: Disable firewall and swap
+  - name: Disable firewall and swap 
     shell: modprobe br_netfilter
     shell: sudo sysctl net.bridge.bridge-nf-call-iptables=1
     shell: sudo ufw disable
@@ -107,17 +152,13 @@
      - mkdir -p /home/vagrant/.kube
      - cp -i /etc/kubernetes/admin.conf /home/vagrant/.kube/config
      - chown vagrant:vagrant /home/vagrant/.kube/config
+     - kubectl 
     become: false
     become_user: vagrant
-#Before Installing the Network please wait for 100 seconds
-  - name: Wait for the Control Plane to get Ready
-    command: sleep 30
-#Install the pod Network.
-  - name: Install calico pod network
-    become: false
-    become_user: vagrant
-    command: kubectl create -f https://docs.projectcalico.org/v3.4/getting-started/kubernetes/installation/hosted/calico.yaml
-
+  
   handlers:
     - name: docker status
       service: name=docker state=started
+    
+    - name: restart containerd
+      service: name=containerd state=restarted
