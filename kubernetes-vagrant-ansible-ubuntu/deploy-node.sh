@@ -5,5 +5,6 @@
 ####################################################################################   #
 #!/bin/bash
 
-sudo rm /etc/containerd/config.toml
-sudo -i systemctl restart containerd
+sudo apt-get update -y
+sudo apt-get install ansible -y
+ansible-playbook node-playbook.yml -vvvv

@@ -1,6 +1,6 @@
 ---
 - hosts: localhost
-  become: true
+  become: yes
   tasks:
   - name: Install packages that allow apt to be used over HTTPS
     apt:
@@ -37,12 +37,57 @@
     service:
        name: docker
        enabled: yes
-  - name: Add vagrant user to docker group
-    shell: docker
-    shell: sudo usermod -aG docker $USER
-    shell: docker run hello-world
+  - name: Restart Docker
+    service:
+      name: docker
+      daemon_reload: yes
+      state: restarted
 
-  - name: Remove swapfile from /etc/fstab
+  - name: Ensure containerd config directory exists.
+    file:
+      path: /etc/containerd
+      state: directory
+    register: containerd_dir
+
+  - name: Get defaults from containerd.
+    command: containerd config default
+    changed_when: false
+    register: containerd_config_default
+
+  - name: Prepare containerd/config.toml from default config
+    copy:
+      dest: /tmp/containerd_config.toml
+      content: "{{ containerd_config_default.stdout }}"
+
+  - name: Set Cgroup driver to systemd
+    lineinfile:
+      insertafter: '.*\[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options\]$'
+      line: '          SystemdCgroup = true'
+      state: present
+      path: /tmp/containerd_config.toml
+
+  - name: Make sure  SystemdCgroup = false is not set
+    ansible.builtin.lineinfile:
+      path: /tmp/containerd_config.toml
+      state: absent
+      line: '            SystemdCgroup = false'
+    notify: restart containerd
+
+  - name: Copy config.toml to /etc/containerd
+    copy:
+      remote_src: true
+      src: /tmp/containerd_config.toml
+      dest: /etc/containerd/config.toml
+    notify: restart containerd
+
+  - name: Cleanup temporary file
+    file:
+     path: /tmp/containerd_config.toml
+     state: absent
+    changed_when: false
+
+
+  - name: Remove swapfile from /etc/fstab###########################################################################
     mount:
       name: "{{ item }}"
       fstype: swap
@@ -50,7 +95,7 @@
     with_items:
       - swap
       - none
-  - name: Disable firewall and swap
+  - name: Disable firewall and swap 
     shell: modprobe br_netfilter
     shell: sudo sysctl net.bridge.bridge-nf-call-iptables=1
     shell: sudo ufw disable
@@ -83,57 +128,37 @@
   - name: Configure node ip
     lineinfile:
       path: /etc/default/kubelet
-      line: KUBELET_EXTRA_ARGS=--node-ip=10.0.0.100
+      line: KUBELET_EXTRA_ARGS=--node-ip="192.168.50.10"
       create: yes
-
+#RESTART the containerd service as it is a preflight requirement. Also Restart the 'kubelet'
+  - name: Remove Config File
+    command: rm /etc/containerd/config.toml
+  - name: Restart Containerd  
+    service:
+      name: containerd
+      daemon_reload: yes
+      state: restarted
   - name: Restart kubelet
     service:
       name: kubelet
       daemon_reload: yes
       state: restarted
-
-  - name: Starting Containerd
-    shell: sudo chmod +x cont.sh
-    shell: sudo sh cont.sh
-
-  - name: initialize the cluster
-    shell: kubeadm init  --apiserver-advertise-address="10.0.0.100" --pod-network-cidr="10.244.0.0/16"  --apiserver-cert-extra-sans "10.0.0.100" --ignore-preflight-errors Swap --ignore-preflight-errors=Mem
+#Initialize the Kube cluster.
+  - name: Initialize the Kubernetes cluster using kubeadm
+    command: kubeadm init --apiserver-advertise-address="192.168.50.10" --apiserver-cert-extra-sans="192.168.50.10"  --node-name k8s-master --pod-network-cidr=192.168.0.0/16
+  - name: Setup kubeconfig for vagrant user
+    command: "{{ item }}"
+    with_items:
+     - mkdir -p /home/vagrant/.kube
+     - cp -i /etc/kubernetes/admin.conf /home/vagrant/.kube/config
+     - chown vagrant:vagrant /home/vagrant/.kube/config
+     - kubectl 
+    become: false
+    become_user: vagrant
   
-  - name: create .kube directory
-    become: yes
-    become_user: vagrant
-    file:
-      path: $HOME/.kube
-      state: directory
-      mode: 0755
-  - name: sudo copy admin.conf to user's kube config
-    become: yes
-    become_user: root
-    copy:
-        src: /etc/kubernetes/admin.conf
-        dest: /home/vagrant/.kube/config
-        remote_src: yes
-        owner: vagrant
-
-  - name: sleep until master ready
-    shell: sleep 200
-
-  - name: install Pod network
-    become: yes
-    become_user: vagrant
-    shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml >> pod_network_setup.txt
-    args:
-      chdir: $HOME
-      creates: pod_network_setup.txt  
-        
-  - name: Get the token for joining the worker nodes
-    become: yes
-    become_user: vagrant
-    shell: kubeadm token create  --print-join-command > join.sh
-    args:
-      chdir: $HOME
-      creates: join.sh
-
   handlers:
     - name: docker status
       service: name=docker state=started
+    
+    - name: restart containerd
+      service: name=containerd state=restarted

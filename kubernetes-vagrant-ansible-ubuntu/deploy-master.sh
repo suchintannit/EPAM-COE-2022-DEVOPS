@@ -4,7 +4,9 @@
 # Installs all the required dependencies for the running of kubernetes and docker.     #
 ####################################################################################   #
 #!/bin/bash
-
-sudo apt-get update -y
-sudo apt-get install ansible -y
-ansible-playbook node-playbook.yml
+echo "#########################common"
+sudo sudo rm -rf /var/lib/apt/lists/*
+sudo sudo apt-get clean
+sudo -i apt-get update -y
+sudo -i apt-get install ansible -y
+ansible-playbook master-playbook.yml -vvvvvv
