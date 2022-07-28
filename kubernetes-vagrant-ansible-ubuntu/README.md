@@ -22,19 +22,22 @@ The default setting will create the private network from 10.0.0.100 to 10.0.0.10
 
 **Vagrant** is a command line tool used to automate the formation of virtual machines (VMs). It is a good option to use vagrant to automate the creation of VMs on which our master and workers will run. For this example, the vagrantfile create 3 ubuntu 'nodes' running the vagrant box ubuntu. 
 
-To execute this whole project just execute the following in the root folder in Powershell as the administrator. Please ADD A BLANK Folder named 'shared' in the root folder.
 
 		PS>vagrant up
 
 This command invokes the vagrantfile in the project.  Of the 3 nodes, one is the master and will run the kubernetes controller and dashboard. The master node is responsible to run the control plane. The control plane listens to REST API request. The worker nodes01 executes a python to-do docker container while the node02 stores its persitant database through a mysql container. This project demonstrates how a multi container app can be managed by a cluster. The vagrant file contains 3 basic variables
 
-**NUM_WORKER_NODES=1** - Defines the number of worker nodes.
+Once the master is created the vagrant file uses the "deploy-master.sh" and "deploy-network.sh" to provision it as a kubernetes _Master_. Also, when the worker nodes are created the vagrant file provisions them as _Workers_ using the "common.sh" and the "node.sh" scripts.
 
-**IP_NW="10.0.0."** - Defines the IP range in which nodes will be created.
+Once the master and nodes are up do the following:
+	1.SSH into the master node from Powershell
+	2.In master node execute: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+	3.Now turn into the worker nodes and run the output of kubeadm-init in the master node something like this
+		kubeadm join 10.0.0.10:6443 --token d6c4tt.hp87qv9qel8s25zs --discovery-token-ca-cert-hash 			sha256:c3df3c0dbc6be18f59f180b535a4de1a37ba8082a2dfc638df1b01a1547b34fa
+	4. Once the nodes join the master, In node1 install the to-do my app. In node2 install its persistant database.
+	5. Follow the instaructions from https://docs.docker.com/get-started/02_our_app/#:~:text=%20Start%20an%20app%20container%20%F0%9F%94%97%20%201,items%20as%20complete%20and%20remove%20items.%20More%20
+	6. Run the app on node1 and check in node2 if the database is being stored.
 
-**IP_START=10** - The last octate of MASTER IP address.
-
-Once the master is created the vagrant file uses the "common.sh" and "master.sh" to provision it as a kubernetes _Master_. Also, when the worker nodes are created the vagrant file provisions them as _Workers_ using the "common.sh" and the "node.sh" scripts.
 
 ### 3. How the Tools (Vagrant, Ansible Docker and Ubuntu) Automation Works?
 	 	 ______________________________________________________________________________________
