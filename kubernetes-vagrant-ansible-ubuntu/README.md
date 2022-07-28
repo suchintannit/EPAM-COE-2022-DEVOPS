@@ -1,7 +1,7 @@
 #### AUTOMATION of KUBERNETES CLUSTER on UBUNTU using VAGRANT and Ansible scripts. 
 **Author**-SUCHINTAN MISHRA [suchintan_mishra@epam.com]
 
-### 1. Architecture
+### 1. Automated Creation of Kubernetes cluster on ubuntu: Using Vagrant and Ansible.
 
 **Kubernetes**: Kubernetes is a portable, extensible, open source platform for managing containerized workloads and services, that facilitates both declarative configuration and automation. It has a large, rapidly growing ecosystem. Kubernetes services, support, and tools are widely available. Nodes (like VMs) and inside these nodes Pods (like Containers) are executed. Kubernetes works on a master-slave architecture where there is atleast one master and multiple workers.
 
@@ -117,7 +117,7 @@ In contrast with other popular configuration-management software — such as Che
 
 In this project we have 2 ansible yml files **deploy-master** and **deploy-node**. The scripts are responsible to deploy kubernetes on master and worker nodes respectively. Once **creation of a cluster of 1 master and 2 worker nodes**, apps can be deployed as pods into the worker nodes. These scripts automate the entire process of setting of a kubernetes cluster. Also in the script we have 2 bash scripts .
 
-**NOTE**:-These bash scripts are only used to install ansible in the master and worker nodes as I am working on a windows system where ansible cannot be installed ( it is very contrary to the fact that ansible is stateless and should not be installed in the target system). If you are working on an ubuntu system (which i recommend you do) then there is no need of the bash scripts. The automation can only be done using vagrant and ansible. On any vagrant, virtualbox and ansible installed ubuntu system just change the following in the vagrant file.
+**NOTE**:-These bash scripts are only used to install ansible in the master and worker nodes as I am working on a windows system where ansible cannot be installed ( it is very contrary to the fact that ansible is stateless and should not be installed in the target system). If you are working on an ubuntu system (which i recommend you do) then there is no need of the bash scripts. The automation can only be done using vagrant and ansible. On any vagrant, virtualbox and ansible installed ubuntu system just change the following in the vagrant file. Mind you if in the host system ansible can run then there is no need of vagrant either. the whole setup can be done only using ansible scripts.
 		
 		ansible.playbook = "deploy-master"
             	ansible.extra_vars = 
