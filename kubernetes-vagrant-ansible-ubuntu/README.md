@@ -31,7 +31,7 @@ Once the master is created the vagrant file uses the "deploy-master.sh" and "dep
 
 Once the master and nodes are up do the following:
 
-	1.SSH into the master node from Powershell
+	1.SSH into the master node from Powershell: vagrant ssh k8s-master(or node1/node2)
 	
 	2.In master node execute: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 	
@@ -66,7 +66,8 @@ Once the master and nodes are up do the following:
 	 	'											'
 		'______________________________________________________________________________________	'
 		
-	 
+### 6. How to deploy applications into pods?
+
 	 
 ### 5. Troubleshoot Execution.
 Do a vagrant up the first time you execute. Let the process complete in one go. If it gets stuck then close the VMs from virtualbox and then do the follwoing options from the root folder.
