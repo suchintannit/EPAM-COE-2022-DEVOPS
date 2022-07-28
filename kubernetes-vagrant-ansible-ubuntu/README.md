@@ -86,72 +86,8 @@ Infrastructure as code (IaC) is the process of managing and provisioning compute
 Ansible is a suite of software tools that enables infrastructure as code. It is open-source and the suite includes software provisioning, configuration management, and application deployment functionality.
 
 In contrast with other popular configuration-management software — such as Chef, Puppet, Salt and CFEngine — Ansible uses an agentless architecture, with Ansible software not normally running or even installed on the controlled node. Instead, Ansible orchestrates a node by installing and running modules on the node temporarily via SSH. For the duration of an orchestration task, a process running the module communicates with the controlling machine with a JSON-based protocol via its standard input and output. When Ansible is not managing a node, it does not consume resources on the node because no daemons are run or software installed.
-### 7. Explanation of Output During the Execution of "common.sh" file.
-	PS>"Installing Docker"
-
-	Until this step in the common.sh we try to download all images required for the kudeadm configuration. This step without errors signifies that we are now ready to deploy our control plane. Adding Kubernetes Repository. Adding Firewall Rules. Deactivatind 	Firewall. Disabling SWAP
-
-	PS>"Adding Kubernetes Repository"
-
-	Now, run the apt-add-repository command to add the Kubernetes package repository in Ubuntu. You must perform the following steps:
-	
-		printf "##### Adding Kubernetes Repository #####\n"
-		sudo curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-		echo 'deb http://apt.kubernetes.io/ kubernetes-xenial main' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 
-	PS>"Adding Firewall Rules"
-
-
-
-	PS>"Deactivatind Firewall"
-
-
-
-	PS>"Disabling SWAP".
-
- 
-
-### 8. Explanation of Output During the Execution of "master.sh" file.
-
-
-	PS>"Preflight Check Passed: Downloaded All Required Images".
-
-	Until this step in the master.sh we try to download all images required for the kudeadm configuration. This step without errors signifies that we are now ready to deploy our control plane.
-
-	PS>"K8s Control Plane Successful".
-
-	After this output you can be certain that the init command has been executed and the control plane is now running at 10.0.0.10 and the api-server is listening to that address.
-
-	PS>"Admin Conf Directory Made. ENV variable exported".
-
-	The admin configuration directory is made through the following commands which have to be executed 
-
-	*as root:
-
-		$ export KUBECONFIG=/etc/kubernetes/admin.conf
-	
-	*or as others:
-
-		$ mkdir -p "$HOME"/.kube
-  		$ cp -i /etc/kubernetes/admin.conf "$HOME"/.kube/config
- 		$ chown "$(id -u)":"$(id -g)" "$HOME"/.kube/config
-	
-	PS>"Network Appplied".
-
-	Flannel in Kubernetes is a virtual layer that is used with containers, it is designed basically for containers only. The above output shows that a network for pods has been created.
-
-	PS>"Join Sh Created".
-
-	Until this step in the master.sh we try to download all images required for the kudeadm configuration. This step without errors signifies that we are noe 		readyt to deploy our control plane.
-
-	PS>"Install Calico Network Plugin".
-
-	After this output you can be certain that the init command has been executed and the control plane is now running at 10.0.0.10 and the api-server is listening 		to that address.
-
-	PS>
-
-### 9. Explanation of the node.sh file.
 
 This script is meant to make the _workers_ join the working _master_. The 'master.sh' script while deploying the master will create the print-join command that can be used to make the workers join a cluster. node.sh automates by executing this script.
 ### 10. FAQs.
