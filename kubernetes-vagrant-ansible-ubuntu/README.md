@@ -30,12 +30,18 @@ This command invokes the vagrantfile in the project.  Of the 3 nodes, one is the
 Once the master is created the vagrant file uses the "deploy-master.sh" and "deploy-network.sh" to provision it as a kubernetes _Master_. Also, when the worker nodes are created the vagrant file provisions them as _Workers_ using the "common.sh" and the "node.sh" scripts.
 
 Once the master and nodes are up do the following:
+
 	1.SSH into the master node from Powershell
+	
 	2.In master node execute: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+	
 	3.Now turn into the worker nodes and run the output of kubeadm-init in the master node something like this
 		kubeadm join 10.0.0.10:6443 --token d6c4tt.hp87qv9qel8s25zs --discovery-token-ca-cert-hash 			sha256:c3df3c0dbc6be18f59f180b535a4de1a37ba8082a2dfc638df1b01a1547b34fa
+		
 	4. Once the nodes join the master, In node1 install the to-do my app. In node2 install its persistant database.
+	
 	5. Follow the instaructions from https://docs.docker.com/get-started/02_our_app/#:~:text=%20Start%20an%20app%20container%20%F0%9F%94%97%20%201,items%20as%20complete%20and%20remove%20items.%20More%20
+	
 	6. Run the app on node1 and check in node2 if the database is being stored.
 
 
