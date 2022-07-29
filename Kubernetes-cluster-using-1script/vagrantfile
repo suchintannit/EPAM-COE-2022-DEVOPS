@@ -21,9 +21,9 @@ Vagrant.configure("2") do |config|
         worker.vm.provision :shell, privileged: false, inline: <<-SHELL
   echo "Step 1"
   sudo /vagrant/join.sh
-  echo "joined the master"
+  echo "This worker node joined the master"
   echo 'Environment="KUBELET_EXTRA_ARGS=--node-ip=10.0.0.#{i + 11}"' | sudo tee -a /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-  echo "created conf file for worker#####################"
+  echo "created conf file for worker and reloaded system#####################"
   sudo systemctl daemon-reload
   sudo systemctl restart kubelet
   SHELL
@@ -35,19 +35,24 @@ Vagrant.configure("2") do |config|
   
   
   $install_common_tools = <<-SCRIPT
-  echo "Common Tools#############################################"
+  #This is common tools script that installs docker and kubernetes on each node of the cluster and makes sure that they are ready to be added to the cluster
+
+  echo "Starting the Common Tools#############################################\n"
   sudo apt-get update -y
+  echo "Installing Docker#####################################################\n"
   apt-get install -y docker.io
-  
+  echo "Adding the Kubernetes Repo#############################################\n"
   curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
   sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
   apt-get update
+  echo "Installing Kubernetes Tools#############################################\n"
   apt-get install -y kubelet kubeadm kubectl  
   sudo apt-mark hold kubeadm kubelet kubectl
-  echo "###########################################################################"
+  echo "Testing install of Kubernetes############################################\n"
   kubeadm version
+  echo "Install dependent Tools#############################################\n"
   sudo apt-get install -y ebtables ethtool
-  # bridged traffic to iptables is enabled for kube-router.
+  echo "bridged traffic to iptables is enabled for kube-router.\n"
   cat >> /etc/ufw/sysctl.conf <<EOF
   net/bridge/bridge-nf-call-ip6tables = 1
   net/bridge/bridge-nf-call-iptables = 1
@@ -62,35 +67,40 @@ Vagrant.configure("2") do |config|
   SCRIPT
   
   $provision_master_node = <<-SHELL
+  echo "Creating the Output File#############################################\n"
   OUTPUT_FILE=/vagrant/join.sh
   rm -rf $OUTPUT_FILE
   echo "output file cleared############################"
-  
+  echo "Starting the Kubernetes Cluster on Master Node############################################\n"
   # Start cluster
   sudo kubeadm init --apiserver-advertise-address=10.0.0.10 --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=mem | grep "kubeadm join" > ${OUTPUT_FILE}
   
-  
+  echo "Change the owner of config file#############################################\n"
   # Configure kubectl
   mkdir -p $HOME/.kube
   sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
   sudo chown $(id -u):$(id -g) $HOME/.kube/config
   
   # Fix kubelet IP
+  echo "Fixing Kubelet IP#############################################\n"
   echo 'Environment="KUBELET_EXTRA_ARGS=--node-ip=10.0.0.10"' | sudo tee -a /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
   
   # Configure flannel
+  echo "Install the flannel network fabric#############################################\n"
   curl -o kube-flannel.yml https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
   sed -i.bak 's|"/opt/bin/flanneld",|"/opt/bin/flanneld", "--iface=enp0s8",|' kube-flannel.yml
   kubectl create -f kube-flannel.yml
-  
+  echo "Relaoding the system#############################################\n"
   sudo systemctl daemon-reload
   sudo systemctl restart kubelet
+  echo "Save join token to join.sh file#############################################\n"
   kubeadm token create --print-join-command > /vagrant/join.sh
   chmod +x /vagrant/join.sh
   SHELL
 
   $install_multicast = <<-SHELL
+  echo "Install Multicast Tools#############################################\n"
   sudo apt-get install -y avahi-daemon libnss-mdns
   #Get token to join worker nodes
-  
+  echo "Master node setup Complete#############################################\n"
   SHELL
